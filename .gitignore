@@ -1,0 +1,6 @@
+.terraform
+.terraform*
+venv
+terraform.*
+*.auto.tfvars
+*.sh
