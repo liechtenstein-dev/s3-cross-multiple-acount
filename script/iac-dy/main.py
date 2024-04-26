@@ -6,6 +6,7 @@ import os
 
 s3 = boto3.client('s3')
 writer_account_id = os.environ['WRITER_ACCOUNT_ID']
+dir_path = '../../iac/reader/'
 
 def current_s3_buckets():
   print(colorama.Fore.GREEN + 'Current S3 Buckets...' + colorama.Fore.RESET)
@@ -13,13 +14,12 @@ def current_s3_buckets():
   bucket_names = [bucket['Name'] for bucket in response['Buckets']]
   bucket_names_str = str(bucket_names).replace("'", '"')
   print(colorama.Fore.YELLOW + f'Bucket Names: {bucket_names_str}' + colorama.Fore.RESET)
-  return bucket_names_str
-
-def terraform_build(bucket_names: list):
-  dir_path = '../../iac/reader/'
   with open(os.path.join(dir_path, 'vars.tfvars'), 'w') as f:
     f.write(f'bucket_name = {bucket_names}\n')
     f.write(f'writer_account_id = "{writer_account_id}"\n')
+  return bucket_names_str
+
+def terraform_build():
   print(colorama.Fore.GREEN + 'Building Terraform...' + colorama.Fore.RESET)
   subprocess.run(['terraform', 'init'], cwd=dir_path, check=True)
   subprocess.run(['terraform', 'plan', '-var-file vars.tfvars'], cwd=dir_path, check=True)
@@ -34,8 +34,8 @@ def terraform_build(bucket_names: list):
 
 def main():
   colorama.init()
-  #current_s3_buckets()
-  terraform_build(current_s3_buckets())
+  current_s3_buckets()
+  terraform_build()
   colorama.deinit()
 
 if __name__ == '__main__':
