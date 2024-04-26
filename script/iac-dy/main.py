@@ -22,7 +22,7 @@ def current_s3_buckets():
 def terraform_build():
   print(colorama.Fore.GREEN + 'Building Terraform...' + colorama.Fore.RESET)
   subprocess.run(['terraform', 'init'], cwd=dir_path, check=True)
-  subprocess.run(['terraform', 'plan', '-var-file vars.tfvars'], cwd=dir_path, check=True)
+  subprocess.run(['terraform', 'plan', '-var-file vars.tfvars', '-target module.shell'], cwd=dir_path, check=True)
   print(colorama.Fore.GREEN + 'Apply Terraform...' + colorama.Fore.RESET)
   os.sleep(5)
   error = open('error.log', 'w')

@@ -1,6 +1,19 @@
-resource "aws_iam_user" "caller_user" {
-  count = length(data.aws_iam_user.caller_user.user_name) == 0 ? 1 : 0
-  name = var.username
+data "aws_caller_identity" "current" {}
+
+resource "aws_iam_role" "s3_writer_role" {
+  name               = "S3WriterRole"
+  assume_role_policy = data.aws_iam_policy_document.s3_writer_role.json
+}
+
+data "aws_iam_policy_document" "s3_writer_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+  }
 }
 
 resource "aws_iam_policy" "s3_writer_policy" {
@@ -12,12 +25,15 @@ resource "aws_iam_policy" "s3_writer_policy" {
     Statement = [
       {
         Action = [
-          "s3:PutObject",
-          "s3:GetObject",
           "s3:ListBucket",
+          "s3:ListAllMyBuckets",
+          "s3:GetObject",
+          "s3:PutObject",
           "s3:DeleteObject",
+          "s3:ReplicateObject",
+          "s3:ReplicateDelete"
         ]
-        Effect   = "Allow"
+        Effect = "Allow"
         Resource = [
           "arn:aws:s3:::${var.source_bucket_name}/*",
         ]
@@ -26,7 +42,3 @@ resource "aws_iam_policy" "s3_writer_policy" {
   })
 }
 
-resource "aws_iam_user_policy_attachment" "s3_writer_user_attach" {
-  user       = data.aws_iam_user.caller_user.user_name == null ? aws_iam_user.caller_user.name : data.aws_iam_user.caller_user.user_name
-  policy_arn = aws_iam_policy.s3_writer_policy.arn
-}

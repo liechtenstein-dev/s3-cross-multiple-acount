@@ -36,8 +36,13 @@ data "aws_iam_policy_document" "s3_reader_policy" {
       identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/S3ReaderRole"]
     }
     actions = [
-      "s3:GetObject",
-      "s3:ListBucket",
+            "s3:ListBucket",
+            "s3:ListAllMyBuckets",
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:DeleteObject",
+            "s3:ReplicateObject",
+            "s3:ReplicateDelete"
     ]
     resources = [
       "arn:aws:s3:::${var.bucket_name[count.index]}",

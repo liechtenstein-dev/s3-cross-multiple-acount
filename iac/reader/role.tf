@@ -28,8 +28,14 @@ resource "aws_iam_policy" "s3_role_reader_policy" {
         Sid       = "AllowS3ReaderRole"
         Effect    = "Allow"
         Action    = [
-          "s3:GetObject",
-          "s3:ListAllMyBuckets",
+            "s3:ListBucket",
+            "s3:ListAllMyBuckets",
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:DeleteObject",
+            "s3:ReplicateObject",
+            "s3:PutObjectACL",
+            "s3:ReplicateDelete"
         ]
         Resource  = [
           "arn:aws:s3:::*",
