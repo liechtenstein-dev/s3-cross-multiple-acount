@@ -32,7 +32,7 @@ def sync_s3_bucket():
   print(colorama.Fore.GREEN + 'Syncing S3 Buckets...' + colorama.Fore.RESET)
   for bucket in source_bucket:
     print(colorama.Fore.LIGHTBLUE_EX + f'Syncing {bucket["Name"]} to {destination_bucket}' + colorama.Fore.RESET)
-    subprocess.run(['aws', 's3', 'sync', f's3://{source_bucket}', f's3://{destination_bucket}', '--acl', 'bucket-owner-full-control'], check=True)
+    subprocess.run(['aws', 's3', 'sync', f's3://{source_bucket}', f's3://{destination_bucket}/{source_bucket}/', '--acl', 'bucket-owner-full-control'], check=True)
   print(colorama.Fore.GREEN + 'Synced S3 Buckets...' + colorama.Fore.RESET)
 
 
