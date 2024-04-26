@@ -4,3 +4,4 @@ venv
 terraform.*
 *.auto.tfvars
 vars.sh
+*.tfvars
