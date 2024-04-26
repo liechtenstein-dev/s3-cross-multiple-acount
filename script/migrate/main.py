@@ -7,10 +7,8 @@ import os
 # use writer role
 
 s3 = boto3.client('s3')
-aws_account_id = os.environ['TARGET_ACCOUNT_ID']
 destination_bucket = os.environ['DESTINATION_BUCKET']
-print(colorama.Fore.GREEN + f'AWS Account ID: {aws_account_id}\n' + colorama.Fore.RESET
-      + colorama.Fore.GREEN + f'Destination Bucket: {destination_bucket}\n' + colorama.Fore.RESET)
+print(colorama.Fore.GREEN + f'Destination Bucket: {destination_bucket}\n' + colorama.Fore.RESET)
 
 def current_s3_buckets():
   print(colorama.Fore.GREEN + 'Current S3 Buckets...')

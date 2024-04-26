@@ -4,30 +4,30 @@ module "shell" {
   count = length(var.bucket_name)
   source  = "Invicton-Labs/shell-resource/external"
   version = "0.4.1"
-  command_unix = "aws s3api get-bucket-policy --bucket ${var.bucket_name[count.index]} 2&>/dev/null || echo $?"
+  command_unix = <<EOF
+     aws s3api get-bucket-policy --bucket ${var.bucket_name[count.index]} 2&>/dev/null || echo "No policy"
+  EOF
 }
 
 locals {
-  exit_code_lst = module.shell[*].exit_code
-  count_bucket_policies = sum([for i in local.exit_code_lst: i  != 0 ? 1 : 0])
+  stdout = module.shell[*].stdout
+  count_bucket_policies = sum([for i in local.stdout: i != "No policy" ? 1 : 0])
 }
 
 resource "null_resource" "bucket" {
-  count = local.count_bucket_policies == 0 ? 0 : length(var.bucket_name)
+  count = local.count_bucket_policies
 }
 
 data "aws_s3_bucket_policy" "s3_existing_policy" {
-  count  = local.count_bucket_policies == 0 ? 0 : length(var.bucket_name)
+  count  = local.count_bucket_policies
   bucket = var.bucket_name[count.index]
-}
-
-locals {
-  bucket_policy = try([jsondecode(data.aws_s3_bucket_policy.s3_existing_policy[*].policy)], [""])
 }
 
 data "aws_iam_policy_document" "s3_reader_policy" {
   count = length(var.bucket_name)
-  source_policy_documents = local.bucket_policy == [""] ? [local.bucket_policy[0]] : [local.bucket_policy[count.index]]
+  source_policy_documents = [
+    data.aws_s3_bucket_policy.s3_existing_policy[count.index].policy == [] ? null : data.aws_s3_bucket_policy.s3_existing_policy[count.index].policy
+  ]
   statement {
     sid       = "AllowS3ReaderRole"
     effect    = "Allow"
@@ -37,7 +37,6 @@ data "aws_iam_policy_document" "s3_reader_policy" {
     }
     actions = [
             "s3:ListBucket",
-            "s3:ListAllMyBuckets",
             "s3:GetObject",
             "s3:PutObject",
             "s3:DeleteObject",

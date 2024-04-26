@@ -13,6 +13,7 @@ module "s3_bucket" {
   acl    = "private"
   control_object_ownership = true
   object_ownership         = "ObjectWriter"
+  attach_policy = true
   versioning = {
     enabled = true
   }
