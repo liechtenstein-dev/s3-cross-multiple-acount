@@ -4,6 +4,8 @@ import boto3
 import colorama
 import os
 
+# use writer role
+
 s3 = boto3.client('s3')
 account_id = boto3.client('sts').get_caller_identity().get('Account')
 role_name = os.environ['ROLE_NAME']
@@ -36,6 +38,7 @@ def sync_s3_bucket():
 
 def main():
   colorama.init()
+
   assume_role()
   sync_s3_bucket()
 

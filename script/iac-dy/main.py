@@ -32,8 +32,6 @@ def terraform_build(bucket_names: list):
     exit(1)
   print(colorama.Fore.GREEN + 'Terraform Applied...' + colorama.Fore.RESET)
 
-
-
 def main():
   colorama.init()
   #current_s3_buckets()
