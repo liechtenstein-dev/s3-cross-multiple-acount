@@ -57,7 +57,7 @@ def update_bucket_policy():
           "Sid": "AllowS3ReaderRole",
           "Effect": "Allow",
           "Principal": {
-            "AWS": f"arn:aws:iam::483127353410:role/S3ReaderRole"
+            "AWS": f"arn:aws:iam::{caller_identity}:role/S3ReaderRole"
           },
           "Action": [
               "s3:ListBucket",
